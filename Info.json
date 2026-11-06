@@ -1,0 +1,35 @@
+{
+  "name": "Trim",
+  "identifier": "com.semiconducted.iina-trim",
+  "version": "2.0.0",
+  "description": "Mark In and Out points and save a lossless clip.",
+  "author": {
+    "name": "Damon Hamm",
+    "url": "https://github.com/semiconducted"
+  },
+  "entry": "dist/main.js",
+  "permissions": [
+    "show-osd",
+    "file-system"
+  ],
+  "sidebarTab": {
+    "name": "Trim"
+  },
+  "preferencesPage": "pref.html",
+  "preferenceDefaults": {
+    "ffmpeg_location": "",
+    "clip_suffix": "-clip",
+    "duplicate_separator": "-",
+    "shortcut_open": "Ctrl+Shift+t",
+    "shortcut_set_in": "Alt+Shift+i",
+    "shortcut_set_out": "Alt+Shift+o",
+    "thumbnail_min_width": 180,
+    "thumbnail_max_width": 240,
+    "thumbnail_jpeg_quality": 5,
+    "jog_window_first": 20,
+    "jog_window_wide": 300,
+    "reencode_container": "mov",
+    "videotoolbox_quality": 70,
+    "x264_crf": 23
+  }
+}

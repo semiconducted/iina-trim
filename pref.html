@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Trim settings</title>
+    <style>
+      body {
+        padding: 14px;
+        margin: 0;
+        font: 13px -apple-system, BlinkMacSystemFont, sans-serif;
+      }
+
+      h3 {
+        margin: 0 0 4px;
+        font-size: 13px;
+      }
+
+      section {
+        margin-bottom: 18px;
+      }
+
+      .tip,
+      .usual {
+        margin: 0 0 8px;
+        font-size: 11px;
+        opacity: 0.6;
+      }
+
+      .usual {
+        margin: 0;
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 11em 13em minmax(0, 1fr);
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 6px;
+      }
+
+      .row input[type='text'],
+      .row input[type='number'],
+      .wide {
+        box-sizing: border-box;
+        width: 100%;
+      }
+
+      .formats {
+        display: flex;
+        gap: 8px;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <section>
+      <h3>Clip file names</h3>
+      <p class="tip">Slashes and colons are not allowed.</p>
+      <label class="row">
+        Added after the name
+        <input type="text" data-pref-key="clip_suffix" />
+        <span class="usual" data-default-for="clip_suffix">Default: -clip</span>
+      </label>
+      <label class="row">
+        Before the number
+        <input type="text" data-pref-key="duplicate_separator" />
+        <span class="usual" data-default-for="duplicate_separator">Default: -</span>
+      </label>
+    </section>
+
+    <section>
+      <h3>Keyboard shortcuts</h3>
+      <p class="tip">
+        Type them like Ctrl+Shift+t, where Alt is Option and Meta is Command. Avoid keys IINA
+        already uses. Quit and reopen IINA to apply. An invalid entry uses the default.
+      </p>
+      <label class="row">
+        Open Trim
+        <input type="text" data-pref-key="shortcut_open" />
+        <span class="usual" data-default-for="shortcut_open">Default: Ctrl+Shift+t</span>
+      </label>
+      <label class="row">
+        Set In
+        <input type="text" data-pref-key="shortcut_set_in" />
+        <span class="usual" data-default-for="shortcut_set_in">Default: Alt+Shift+i</span>
+      </label>
+      <label class="row">
+        Set Out
+        <input type="text" data-pref-key="shortcut_set_out" />
+        <span class="usual" data-default-for="shortcut_set_out">Default: Alt+Shift+o</span>
+      </label>
+    </section>
+
+    <section>
+      <h3>Frame previews</h3>
+      <p class="tip">In and Out sit side by side when previews fit panel width.</p>
+      <label class="row">
+        Minimum width (px)
+        <input type="number" min="100" max="640" data-pref-key="thumbnail_min_width" />
+        <span class="usual" data-default-for="thumbnail_min_width">Default: 180</span>
+      </label>
+      <label class="row">
+        Maximum width (px)
+        <input type="number" min="100" max="640" data-pref-key="thumbnail_max_width" />
+        <span class="usual" data-default-for="thumbnail_max_width">Default: 240</span>
+      </label>
+      <label class="row">
+        JPEG quality
+        <input type="number" min="2" max="31" data-pref-key="thumbnail_jpeg_quality" />
+        <span class="usual" data-default-for="thumbnail_jpeg_quality">Default: 5</span>
+      </label>
+      <p class="tip">JPEG quality runs from 2 to 31. Lower is better.</p>
+    </section>
+
+    <section>
+      <h3>Keyframe arrows</h3>
+      <p class="tip">
+        How far the arrows look for the next keyframe. The wider search runs only if the first finds
+        none. Larger values are slower on files with few keyframes.
+      </p>
+      <label class="row">
+        First search (s)
+        <input type="number" min="1" max="3600" data-pref-key="jog_window_first" />
+        <span class="usual" data-default-for="jog_window_first">Default: 20</span>
+      </label>
+      <label class="row">
+        Wider search (s)
+        <input type="number" min="1" max="3600" data-pref-key="jog_window_wide" />
+        <span class="usual" data-default-for="jog_window_wide">Default: 300</span>
+      </label>
+    </section>
+
+    <section>
+      <h3>Vertical crop export</h3>
+      <p class="tip">
+        Used only when Vertical crop is on, because cropping re-encodes the video. Lossless clips
+        keep the original format and quality.
+      </p>
+      <div class="row">
+        File format
+        <span class="formats">
+          <label><input type="radio" name="reencode_container" value="mov" data-pref-key /> mov</label>
+          <label><input type="radio" name="reencode_container" value="mp4" data-pref-key /> mp4</label>
+          <label><input type="radio" name="reencode_container" value="mkv" data-pref-key /> mkv</label>
+        </span>
+        <span class="usual" data-default-for="reencode_container">Default: mov</span>
+      </div>
+      <label class="row">
+        Hardware quality
+        <input type="number" min="1" max="100" data-pref-key="videotoolbox_quality" />
+        <span class="usual" data-default-for="videotoolbox_quality">Default: 70</span>
+      </label>
+      <label class="row">
+        Software CRF
+        <input type="number" min="0" max="51" data-pref-key="x264_crf" />
+        <span class="usual" data-default-for="x264_crf">Default: 23</span>
+      </label>
+      <p class="tip">
+        Hardware quality applies when Hardware acceleration is on. It runs from 1 to 100, and higher
+        is better. Software CRF applies when it is off. It runs from 0 to 51, and lower is better.
+      </p>
+    </section>
+
+    <section>
+      <h3>FFmpeg location</h3>
+      <p class="tip">Leave blank to use FFmpeg from Homebrew.</p>
+      <input class="wide" type="text" data-pref-key="ffmpeg_location" placeholder="/opt/homebrew/bin/ffmpeg" />
+    </section>
+  </body>
+</html>
