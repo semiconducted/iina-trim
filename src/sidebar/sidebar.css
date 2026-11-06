@@ -1,0 +1,234 @@
+:root {
+  color-scheme: dark;
+  --page: #17181b;
+  --text: #ececec;
+  --quiet: #9b9da4;
+  --rule: #3a3c43;
+  --well: #232529;
+  --strong: #e9e6df;
+  --bad: #ff8b7e;
+  --good: #7fd6a0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font: 12px/1.35 -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+main {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  min-height: 28px;
+  padding: 2px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--well);
+}
+
+button:disabled,
+input:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+input[type='text'] {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 0 7px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--well);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+
+/* Side by side when two previews at the minimum width fit, stacked otherwise. */
+.marks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--preview-min), 100%), 1fr));
+  justify-items: center;
+  gap: 14px 12px;
+}
+
+.mark {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  max-width: var(--preview-max);
+}
+
+/* A fixed 16:9 box, so nothing moves when a frame arrives. */
+.frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #000;
+}
+
+.frame.loading img {
+  opacity: 0.45;
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.frame-note,
+.length,
+.field-name,
+kbd {
+  color: var(--quiet);
+  font-size: 10px;
+}
+
+.jog {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.cut-time,
+.time,
+.file-name {
+  font-family: ui-monospace, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.cut-time {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cut-time.busy {
+  opacity: 0.5;
+}
+
+.jog button {
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.mark-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+kbd {
+  font-family: inherit;
+}
+
+.length {
+  min-height: 14px;
+  margin: 0;
+  text-align: center;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.option input {
+  margin: 0;
+}
+
+.primary {
+  border-color: var(--strong);
+  background: var(--strong);
+  color: #17181b;
+  font-weight: 600;
+}
+
+.primary:hover:not(:disabled) {
+  background: #fff;
+}
+
+.save {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.save h2 {
+  margin: 0;
+  font-size: 12px;
+}
+
+.save-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+label.save-row {
+  grid-template-columns: 40px minmax(0, 1fr);
+}
+
+.folder {
+  overflow-wrap: anywhere;
+}
+
+.export {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.export progress {
+  width: 100%;
+}
+
+.message {
+  min-height: 16px;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--quiet);
+}
+
+.message.good {
+  color: var(--good);
+}
+
+.message.bad {
+  color: var(--bad);
+}

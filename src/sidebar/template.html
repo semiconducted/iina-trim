@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="__CSP__" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trim</title>
+    <style>__STYLE__</style>
+  </head>
+  <body>
+    <template id="mark-template">
+      <section class="mark">
+        <div class="frame">
+          <img alt="" hidden />
+          <span class="frame-note"></span>
+        </div>
+        <div class="jog">
+          <button type="button" class="jog-back" title="Previous keyframe">|&lt;&lt;</button>
+          <output class="cut-time"></output>
+          <button type="button" class="jog-next" title="Next keyframe">&gt;&gt;|</button>
+        </div>
+        <input class="time" type="text" inputmode="decimal" spellcheck="false" placeholder="00:00:00.000" />
+        <div class="mark-actions">
+          <button type="button" class="set"><span class="set-name"></span> <kbd></kbd></button>
+          <button type="button" class="go">Go</button>
+        </div>
+      </section>
+    </template>
+
+    <main>
+      <div class="marks" id="marks"></div>
+      <p class="length" id="length"></p>
+
+      <label class="option"><input type="checkbox" id="crop" /> Vertical crop (9:16)</label>
+      <label class="option"><input type="checkbox" id="hardware" checked /> Hardware acceleration</label>
+
+      <section class="save">
+        <h2>Save as</h2>
+        <div class="save-row">
+          <span class="field-name">Folder</span>
+          <span class="folder" id="folder"></span>
+          <button type="button" id="change-folder">Change...</button>
+        </div>
+        <label class="save-row">
+          <span class="field-name">Name</span>
+          <input class="file-name" id="file-name" type="text" spellcheck="false" />
+        </label>
+        <button type="button" class="primary" id="save-clip">Save clip</button>
+        <div class="export" id="export" hidden>
+          <progress id="progress" max="1"></progress>
+          <span id="progress-text"></span>
+        </div>
+      </section>
+
+      <p class="message" id="message" role="status"></p>
+    </main>
+    <script>__SCRIPT__</script>
+  </body>
+</html>
