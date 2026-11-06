@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-N68ZWT/BOg+zDwsOW5fy+uMMRYfcoiATgA+/OmjM04s='; style-src 'sha256-UupsM0M2iFUngy9pwZyCiNwaMCaRJubcPDq+XrrYQLY='; img-src data:" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Trim</title>
+    <style>:root {
+  color-scheme: dark;
+  --page: #17181b;
+  --text: #ececec;
+  --quiet: #9b9da4;
+  --rule: #3a3c43;
+  --well: #232529;
+  --strong: #e9e6df;
+  --bad: #ff8b7e;
+  --good: #7fd6a0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--text);
+  font: 12px/1.35 -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+main {
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  min-height: 28px;
+  padding: 2px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+  background: var(--well);
+}
+
+button:disabled,
+input:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+input[type='text'] {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  padding: 0 7px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--well);
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--bad);
+}
+
+/* Side by side when two previews at the minimum width fit, stacked otherwise. */
+.marks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--preview-min), 100%), 1fr));
+  justify-items: center;
+  gap: 14px 12px;
+}
+
+.mark {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  max-width: var(--preview-max);
+}
+
+/* A fixed 16:9 box, so nothing moves when a frame arrives. */
+.frame {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: #000;
+}
+
+.frame.loading img {
+  opacity: 0.45;
+}
+
+.frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.frame-note,
+.length,
+.field-name,
+kbd {
+  color: var(--quiet);
+  font-size: 10px;
+}
+
+.jog {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px;
+}
+
+.cut-time,
+.time,
+.file-name {
+  font-family: ui-monospace, Menlo, monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.cut-time {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.cut-time.busy {
+  opacity: 0.5;
+}
+
+.jog button {
+  font-family: ui-monospace, Menlo, monospace;
+}
+
+.mark-actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
+}
+
+kbd {
+  font-family: inherit;
+}
+
+.length {
+  min-height: 14px;
+  margin: 0;
+  text-align: center;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.option input {
+  margin: 0;
+}
+
+.primary {
+  border-color: var(--strong);
+  background: var(--strong);
+  color: #17181b;
+  font-weight: 600;
+}
+
+.primary:hover:not(:disabled) {
+  background: #fff;
+}
+
+.save {
+  display: grid;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.save h2 {
+  margin: 0;
+  font-size: 12px;
+}
+
+.save-row {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+label.save-row {
+  grid-template-columns: 40px minmax(0, 1fr);
+}
+
+.folder {
+  overflow-wrap: anywhere;
+}
+
+.export {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.export progress {
+  width: 100%;
+}
+
+.message {
+  min-height: 16px;
+  margin: 0;
+  overflow-wrap: anywhere;
+  color: var(--quiet);
+}
+
+.message.good {
+  color: var(--good);
+}
+
+.message.bad {
+  color: var(--bad);
+}
+</style>
+  </head>
+  <body>
+    <template id="mark-template">
+      <section class="mark">
+        <div class="frame">
+          <img alt="" hidden />
+          <span class="frame-note"></span>
+        </div>
+        <div class="jog">
+          <button type="button" class="jog-back" title="Previous keyframe">|&lt;&lt;</button>
+          <output class="cut-time"></output>
+          <button type="button" class="jog-next" title="Next keyframe">&gt;&gt;|</button>
+        </div>
+        <input class="time" type="text" inputmode="decimal" spellcheck="false" placeholder="00:00:00.000" />
+        <div class="mark-actions">
+          <button type="button" class="set"><span class="set-name"></span> <kbd></kbd></button>
+          <button type="button" class="go">Go</button>
+        </div>
+      </section>
+    </template>
+
+    <main>
+      <div class="marks" id="marks"></div>
+      <p class="length" id="length"></p>
+
+      <label class="option"><input type="checkbox" id="crop" /> Vertical crop (9:16)</label>
+      <label class="option"><input type="checkbox" id="hardware" checked /> Hardware acceleration</label>
+
+      <section class="save">
+        <h2>Save as</h2>
+        <div class="save-row">
+          <span class="field-name">Folder</span>
+          <span class="folder" id="folder"></span>
+          <button type="button" id="change-folder">Change...</button>
+        </div>
+        <label class="save-row">
+          <span class="field-name">Name</span>
+          <input class="file-name" id="file-name" type="text" spellcheck="false" />
+        </label>
+        <button type="button" class="primary" id="save-clip">Save clip</button>
+        <div class="export" id="export" hidden>
+          <progress id="progress" max="1"></progress>
+          <span id="progress-text"></span>
+        </div>
+      </section>
+
+      <p class="message" id="message" role="status"></p>
+    </main>
+    <script>"use strict";(()=>{var r={ffmpeg_location:"",clip_suffix:"-clip",duplicate_separator:"-",shortcut_open:"Ctrl+Shift+t",shortcut_set_in:"Alt+Shift+i",shortcut_set_out:"Alt+Shift+o",thumbnail_min_width:180,thumbnail_max_width:240,thumbnail_jpeg_quality:5,jog_window_first:20,jog_window_wide:300,reencode_container:"mov",videotoolbox_quality:70,x264_crf:23};var Y=["mov","mp4","mkv"],F=e=>/^[^/\\:\0]*$/.test(e),M=e=>/^(?:(?:Ctrl|Alt|Shift|Meta)\+)*(?:[A-Za-z0-9]+|[^\s+])$/.test(e);function T(e,t,i,o){let n=e(t);if(typeof n!="string")return i;let s=n.trim();return o(s)?s:i}function v(e,t,i,o,n){let s=e(t),g=typeof s=="string"&&s.trim()!==""?Number(s):s,U=typeof g=="number"&&Number.isFinite(g)?g:i;return Math.min(n,Math.max(o,Math.round(U)))}function G(e){let t=v(e,"thumbnail_min_width",r.thumbnail_min_width,100,640),i=v(e,"jog_window_first",r.jog_window_first,1,3600),o=Y.find(n=>n===e("reencode_container"));return{clipSuffix:T(e,"clip_suffix",r.clip_suffix,F),duplicateSeparator:T(e,"duplicate_separator",r.duplicate_separator,F),reencodeContainer:o??r.reencode_container,shortcuts:{open:T(e,"shortcut_open",r.shortcut_open,M),setIn:T(e,"shortcut_set_in",r.shortcut_set_in,M),setOut:T(e,"shortcut_set_out",r.shortcut_set_out,M)},videotoolboxQuality:v(e,"videotoolbox_quality",r.videotoolbox_quality,1,100),x264Crf:v(e,"x264_crf",r.x264_crf,0,51),thumbnailMinWidth:t,thumbnailMaxWidth:v(e,"thumbnail_max_width",r.thumbnail_max_width,t,640),thumbnailJpegQuality:v(e,"thumbnail_jpeg_quality",r.thumbnail_jpeg_quality,2,31),jogWindows:[i,v(e,"jog_window_wide",r.jog_window_wide,i,3600)]}}var _=G(()=>{}),z={Ctrl:"\u2303",Alt:"\u2325",Shift:"\u21E7",Meta:"\u2318"};function L(e){return e.split("+").map(t=>z[t]??t.toUpperCase()).join("")}var I=(e,t=2)=>String(e).padStart(t,"0");function x(e){let t=Math.round((Number.isFinite(e)?Math.max(0,e):0)*1e3),i=Math.floor(t/1e3);return`${[Math.floor(i/3600),Math.floor(i/60)%60,i%60].map(n=>I(n)).join(":")}.${I(t%1e3,3)}`}function $(e){let t=/^(?:(?:(\d+):)?(\d+):)?(\d+(?:\.\d+)?)$/.exec(e.trim());if(!t)return;let i=t[1],o=t[2],n=Number(t[3]);if(!(o!==void 0&&n>=60)&&!(i!==void 0&&Number(o)>=60))return Number(i??0)*3600+Number(o??0)*60+n}var j=window.iina;function p(e,t){j?.postMessage(e,t)}function l(e,t){j?.onMessage(e,t)}var V=350,d=e=>document.getElementById(e),y=d("crop"),B=d("hardware"),C=d("length"),Z=d("folder"),K=d("change-folder"),h=d("file-name"),X=d("export"),R=d("progress"),q=d("progress-text"),P=d("save-clip"),H=d("message"),W=!0,m=!1,f,k=!1,b,w=class{constructor(t,i){this.mark=t;this.name=i;this.loading=!1;this.stepping=!1;this.queuedSteps=0;let n=d("mark-template").content.firstElementChild?.cloneNode(!0),s=g=>n.querySelector(g);this.frame=s(".frame"),this.image=s("img"),this.note=s(".frame-note"),this.cutTime=s(".cut-time"),this.back=s(".jog-back"),this.next=s(".jog-next"),this.input=s(".time"),this.set=s(".set"),this.keyName=s("kbd"),this.go=s(".go"),s(".set-name").textContent=`Set ${i}`,this.image.alt=`${i} frame`,this.input.setAttribute("aria-label",`${i} time`),this.back.setAttribute("aria-label",`Move ${i} to the previous keyframe`),this.next.setAttribute("aria-label",`Move ${i} to the next keyframe`),this.go.title=`Jump to ${i}`,this.back.addEventListener("click",()=>this.step(-1)),this.next.addEventListener("click",()=>this.step(1)),this.set.addEventListener("click",()=>p("markPlayhead",{mark:t})),this.go.addEventListener("click",()=>{this.seconds!==void 0&&p("seek",{time:this.seconds})}),this.input.addEventListener("input",()=>this.timeTyped()),this.input.addEventListener("blur",()=>this.tidyTyped()),this.input.addEventListener("keydown",g=>{g.key==="Enter"&&this.tidyTyped()}),d("marks").append(n)}cutPoint(){let t=this.preview,i=t?.time===this.seconds&&t?.frameTime!==null;return this.mark==="in"&&i&&t?t.frameTime??this.seconds:this.seconds}setKey(t){this.keyName.textContent=t,this.set.title=`Set ${this.name} to the playhead (${t})`}setTime(t){this.input.value=t===void 0?"":x(t),this.timeTyped()}timeTyped(){this.seconds=$(this.input.value),H.textContent="",this.requestPreview(),a()}tidyTyped(){if(this.seconds===void 0)return;x(this.seconds)!==this.input.value&&this.setTime(this.seconds)}requestPreview(){clearTimeout(this.timer);let t=this.seconds;if(t===void 0){this.preview=void 0,this.loading=!1;return}this.loading=!0;let i=this.mark==="in"&&!y.checked;this.timer=setTimeout(()=>p("previewWanted",{mark:this.mark,time:t,keyframe:i}),V)}previewArrived(t){t.time===this.seconds&&(this.preview=t,this.loading=!1,a())}step(t){if(this.stepping){this.queuedSteps+=t;return}let i=this.cutPoint();i!==void 0&&(this.stepping=!0,p("stepKeyframe",{mark:this.mark,time:i,direction:t}),a())}stepFinished(t){if(this.stepping=!1,t||(this.queuedSteps=0),this.queuedSteps===0)return;let i=this.queuedSteps>0?1:-1;this.queuedSteps-=i,this.step(i)}dropQueuedSteps(){this.queuedSteps=0}render(t){let i=this.cutPoint(),o=this.input.value.trim(),n=this.seconds===void 0?"":this.preview?.image??"";this.input.disabled=t,this.input.setAttribute("aria-invalid",String(o!==""&&this.seconds===void 0)),this.set.disabled=t,this.go.disabled=t||this.seconds===void 0,this.back.disabled=this.next.disabled=t||i===void 0,this.cutTime.textContent=i===void 0?"--:--:--.---":x(i),this.cutTime.classList.toggle("busy",this.stepping),this.frame.classList.toggle("loading",this.loading),this.image.hidden=n==="",n!==""&&this.image.getAttribute("src")!==n&&(this.image.src=n),this.note.hidden=n!=="",this.note.textContent=this.loading?"Loading frame...":`No ${this.name} frame`}};function O(e,t){document.documentElement.style.setProperty("--preview-min",`${e}px`),document.documentElement.style.setProperty("--preview-max",`${t}px`)}O(_.thumbnailMinWidth,_.thumbnailMaxWidth);var u=new w("in","In"),c=new w("out","Out"),N={in:u,out:c};u.setKey(L(_.shortcuts.setIn));c.setKey(L(_.shortcuts.setOut));function A(){let e=u.seconds,t=c.seconds;if(!(e===void 0||t===void 0||t<=e))return{inTime:e,outTime:t,crop:y.checked,useHardware:B.checked}}function S(e,t){H.textContent=e,H.className=t===""?"message":`message ${t}`}function a(){let e=A();u.render(m),c.render(m),y.disabled=m,B.disabled=m||!y.checked,e?C.textContent=`Length ${x(e.outTime-e.inTime)}`:u.seconds!==void 0&&c.seconds!==void 0?C.textContent="Out must follow In":C.textContent="",Z.textContent=f?.folder??"",K.disabled=h.disabled=m||f===void 0,P.disabled=!Q(),P.textContent=m?"Saving...":"Save clip",X.hidden=!m,b===void 0?(R.removeAttribute("value"),q.textContent="Working..."):(R.value=b,q.textContent=b>=1?"Finishing file...":`${Math.round(b*100)}%`)}function Q(){return W&&!m&&!!A()&&!!f&&h.value.trim()!==""}function E(){p("proposeSave",{crop:y.checked,folder:f?.folder??""})}function D(){let e=A();!Q()||!e||!f||(u.dropQueuedSteps(),c.dropQueuedSteps(),b=void 0,p("startExport",{...e,folder:f.folder,name:h.value.trim()}))}y.addEventListener("change",()=>{u.requestPreview(),E(),a()});K.addEventListener("click",()=>p("pickFolder",{crop:y.checked}));h.addEventListener("input",()=>{k=h.value.trim()!=="",S("",""),a()});h.addEventListener("keydown",e=>{e.key==="Enter"&&D()});P.addEventListener("click",D);l("ffmpegState",({found:e})=>{W=e,e||S("FFmpeg was not found. Set its path in Trim preferences.","bad"),a()});l("sidebarConfig",({minWidth:e,maxWidth:t,inKey:i,outKey:o})=>{O(e,t),u.setKey(i),c.setKey(o)});l("markSet",({mark:e,time:t})=>N[e].setTime(t));l("marksCleared",()=>{f=void 0,k=!1,h.value="",u.dropQueuedSteps(),c.dropQueuedSteps(),u.setTime(void 0),c.setTime(void 0),E()});l("framePreview",e=>N[e.mark].previewArrived(e));l("stepEnded",({mark:e,problem:t})=>{N[e].stepFinished(t===""),t!==""&&S(t,"bad"),a()});l("saveProposal",e=>{f=e,k||(h.value=e.name),a()});l("exportProgress",({fraction:e})=>{b=e,a()});l("exportState",({running:e,outcome:t,message:i})=>{m=e,e||(b=void 0),t==="saved"&&(k=!1,E()),S(i,t==="saved"?"good":t==="failed"?"bad":""),a()});a();p("sidebarReady",{});E();})();
+</script>
+  </body>
+</html>
